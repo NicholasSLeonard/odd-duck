@@ -1,0 +1,5 @@
+body > section > img {
+  width: 30%;
+  height: auto;
+  border: 2px solid black;
+}
