@@ -53,13 +53,13 @@ function createProducts() {
   products[16] = new ProductImage('unicorn', 'img/unicorn.jpg');
   products[17] = new ProductImage('water-can', 'img/water-can.jpg');
   products[18] = new ProductImage('wine-glass', 'img/wine-glass.jpg');
-  // products.forEach(function() {
-  //   if (this.getStorage() !== null) {
-  //     this.imgViews = this.getStorage().imgViews;
-  //     this.imgClicks = this.getStorage().imgClicks;
-  //     console.log('Generated New Arrays');
-  //   }
-  // });
+
+  products.forEach(function (product) {
+    if (product.getStorage() !== null) {
+      product.imgViews = product.getStorage().imgViews;
+      product.imgClicks = product.getStorage().imgClicks;
+    }
+  });
 
 }
 
@@ -84,6 +84,7 @@ function imageClick() {
     for (let i = 0; i < products.length; i++) {
       if (this.id === products[i].productName) {
         products[i].clicked();
+        products[i].updateStorage();
       }
     }
     swapImages();
@@ -139,6 +140,7 @@ function graphResults() {
   let labels = [];
 
   products.forEach(function (product) {
+
     clicks.push(product.imgClicks);
     views.push(product.imgViews);
     labels.push(product.productName);
@@ -163,4 +165,4 @@ function graphResults() {
 
 
 createProducts();
-// renderImages();
+renderImages();
