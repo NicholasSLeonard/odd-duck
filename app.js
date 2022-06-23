@@ -5,6 +5,11 @@ let products = [];
 let chartEl = document.getElementById('resultsChart');
 let ctx = chartEl.getContext('2d');
 
+let imageElements = document.querySelectorAll('img');
+
+let sessionSize = 25;
+let sessionClicks = 0;
+
 function ProductImage(name, path) {
   this.productName = name;
   this.filePath = path;
@@ -15,15 +20,18 @@ function ProductImage(name, path) {
 ProductImage.prototype.clicked = function () {
   this.imgClicks++;
 };
+ProductImage.prototype.updateStorage = function () {
+  let product = JSON.stringify(this);
+  localStorage.setItem(this.productName, product);
+};
+ProductImage.prototype.getStorage = function () {
+  let item = localStorage.getItem(this.productName);
+  return JSON.parse(item);
+};
 
 function randomGen(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
-
-let imageElements = document.querySelectorAll('img');
-
-let sessionSize = 25;
-let clicks = 0;
 
 function createProducts() {
   products[0] = new ProductImage('R2D2Bag', 'img/bag.jpg');
@@ -45,6 +53,14 @@ function createProducts() {
   products[16] = new ProductImage('unicorn', 'img/unicorn.jpg');
   products[17] = new ProductImage('water-can', 'img/water-can.jpg');
   products[18] = new ProductImage('wine-glass', 'img/wine-glass.jpg');
+
+  products.forEach(function (product) {
+    if (product.getStorage() !== null) {
+      product.imgViews = product.getStorage().imgViews;
+      product.imgClicks = product.getStorage().imgClicks;
+    }
+  });
+
 }
 
 function renderImages() {
@@ -64,16 +80,17 @@ function renderImages() {
 
 function imageClick() {
 
-  if (clicks < sessionSize) {
+  if (sessionClicks < sessionSize) {
     for (let i = 0; i < products.length; i++) {
       if (this.id === products[i].productName) {
         products[i].clicked();
+        products[i].updateStorage();
       }
     }
     swapImages();
-    clicks++;
+    sessionClicks++;
   }
-  if (clicks === sessionSize) {
+  if (sessionClicks === sessionSize) {
     createResultsButton();
     imageElements.forEach(function (img) {
       img.removeEventListener('click', imageClick);
@@ -123,6 +140,7 @@ function graphResults() {
   let labels = [];
 
   products.forEach(function (product) {
+
     clicks.push(product.imgClicks);
     views.push(product.imgViews);
     labels.push(product.productName);
@@ -144,5 +162,7 @@ function graphResults() {
     }
   });
 }
+
+
 createProducts();
 renderImages();
