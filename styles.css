@@ -1,5 +1,49 @@
-body > section > img {
-  width: 30%;
+html {
+  height:100%;
+  width: 100%;
+}
+header{
+  text-align: center;
+}
+body{
+  margin:1px;
+}
+#itemSelection > div > img {
+  width: 80%;
   height: auto;
   border: 2px solid black;
+  display: block;
+  margin: auto;
+}
+#itemSelection > div 
+{
+  flex: 1;
+}
+#itemSelection > div > h2
+{
+  text-align: center;
+}
+#itemSelection {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+#description {
+  text-align: center;
+}
+#results {
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+
+}
+#results > button {
+  display:block;
+  width: 100%;
+  top:0px
+}
+#results > div {
+  display: block;
+  padding-left: 10%;
+  padding-right: 10%;
 }
