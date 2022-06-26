@@ -1,16 +1,22 @@
+//Written by Nicholas Leonard
+
 'use strict';
 
+//products stores instances of ProductImage objects
 let products = [];
 
 const chartEl = document.getElementById('resultsChart');
 const ctx = chartEl.getContext('2d');
 
+//imageElements is an array that stores the image elements so they can be accessed later. Same with labelElements.
 const imageElements = document.querySelectorAll('img');
 const labelElements = document.querySelectorAll('.itemName');
 
+//The sessionSize controls how many times the user must pick an image.
 const sessionSize = 25;
 let sessionClicks = 0;
 
+//ProductImage stores information about each product, such as clicks and views.
 function ProductImage(name, path) {
   this.productName = name;
   this.filePath = path;
@@ -18,13 +24,16 @@ function ProductImage(name, path) {
   this.imgClicks = 0;
 }
 
+//clicked increments the imgClicks counter
 ProductImage.prototype.clicked = function () {
   this.imgClicks++;
 };
+//updateStorage stores the ProductImage object in local storage or updates an existing one.
 ProductImage.prototype.updateStorage = function () {
   let product = JSON.stringify(this);
   localStorage.setItem(this.productName, product);
 };
+//getStorage retrieves the object and parses it for use.
 ProductImage.prototype.getStorage = function () {
   let item = localStorage.getItem(this.productName);
   return JSON.parse(item);
@@ -34,6 +43,7 @@ function randomGen(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
 
+//createProducts fills in the products array with all currently coded products. If localstorage has a value for the ProductImage object saved, the value will be loaded.
 function createProducts() {
   products[0] = new ProductImage('R2D2 Bag', 'img/bag.jpg');
   products[1] = new ProductImage('Banana Chopper', 'img/banana.jpg');
@@ -64,6 +74,7 @@ function createProducts() {
 
 }
 
+//renderImages calls the genImages function and applies a onclick listener to each image.
 function renderImages() {
   genImages();
   imageElements.forEach(function (img) {
@@ -71,7 +82,8 @@ function renderImages() {
   });
 }
 
-
+//imageClick checks to make sure the user has not reached the end of the session, and either increments 'clicks' of the product the user clicked on,
+//or removes the images and onclick listeners if the user has reached the end of the session
 function imageClick() {
 
   if (sessionClicks < sessionSize) {
@@ -93,13 +105,15 @@ function imageClick() {
   }
 }
 
+//genImages generates a new image for each of imageElements. It checks that the new product has not been shown last round, or is not already present this round.
+//It also updates the labels for each image using the labelElements array
 function genImages() {
-  let originImages = [imageElements[0].id, imageElements[1].id, imageElements[2].id];
+  let previousImages = [imageElements[0].id, imageElements[1].id, imageElements[2].id];
 
   for (let i = 0; i < imageElements.length; i++) {
     let newProduct = randomGen(0, 18);
 
-    while (products[newProduct].productName === imageElements[0].id || products[newProduct].productName === imageElements[1].id || products[newProduct].productName === imageElements[2].id || products[newProduct].productName === originImages[0] || products[newProduct].productName === originImages[1] || products[newProduct].productName === originImages[2]) {
+    while (products[newProduct].productName === imageElements[0].id || products[newProduct].productName === imageElements[1].id || products[newProduct].productName === imageElements[2].id || products[newProduct].productName === previousImages[0] || products[newProduct].productName === previousImages[1] || products[newProduct].productName === previousImages[2]) {
       newProduct = randomGen(0, 18);
     }
     labelElements[i].innerHTML = products[newProduct].productName;
@@ -109,24 +123,27 @@ function genImages() {
   }
 }
 
+//clearStorage erases all data on the localStorage
 function clearStorage() {
   localStorage.clear();
 }
+// clearImages roves both label and img elements from the page.
 function clearImages() {
   for (let i = 0; i < imageElements.length; i++) {
     imageElements[i].remove();
     labelElements[i].remove();
   }
 }
-function createButton(element, actionFunction, text) {
-  let resultsEl = document.getElementById(element);
+//createButton creates a button created as a child of 'element' with an onclick listener that activates 'action' and is rendered with 'text' text inside.
+function createButton(element, action, text) {
+  let parentEl = document.getElementById(element);
   let btn = document.createElement('button');
-  resultsEl.appendChild(btn);
+  parentEl.appendChild(btn);
 
-  btn.addEventListener('click', actionFunction);
+  btn.addEventListener('click', action);
   btn.innerText = text;
 }
-
+// printResultsText prints out a line that states the number of clicks and views each ProductImage got. Currently unused.
 function printResultsText() {
   let resultsEl = document.getElementById('results')[0];
   for (let i = 0; i < products.length; i++) {
@@ -136,6 +153,8 @@ function printResultsText() {
   }
 }
 
+// graphResults generates a chart using Chart.js. It summarizes the number of clicks and views each ProductImage has using a bar chart.
+//it also generates a button if the user would like to clear all stored data.
 function graphResults() {
 
   let clicks = [];
