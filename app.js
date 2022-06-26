@@ -2,12 +2,13 @@
 
 let products = [];
 
-let chartEl = document.getElementById('resultsChart');
-let ctx = chartEl.getContext('2d');
+const chartEl = document.getElementById('resultsChart');
+const ctx = chartEl.getContext('2d');
 
-let imageElements = document.querySelectorAll('img');
+const imageElements = document.querySelectorAll('img');
+const labelElements = document.querySelectorAll('.itemName');
 
-let sessionSize = 25;
+const sessionSize = 25;
 let sessionClicks = 0;
 
 function ProductImage(name, path) {
@@ -34,25 +35,25 @@ function randomGen(min, max) {
 }
 
 function createProducts() {
-  products[0] = new ProductImage('R2D2Bag', 'img/bag.jpg');
-  products[1] = new ProductImage('bananaChopper', 'img/banana.jpg');
-  products[2] = new ProductImage('IpadHolder', 'img/bathroom.jpg');
-  products[3] = new ProductImage('openToedBoots', 'img/boots.jpg');
-  products[4] = new ProductImage('toasterCoffeeMaker', 'img/breakfast.jpg');
-  products[5] = new ProductImage('meatBallGum', 'img/bubblegum.jpg');
-  products[6] = new ProductImage('chair', 'img/chair.jpg');
-  products[7] = new ProductImage('cthulu', 'img/cthulhu.jpg');
-  products[8] = new ProductImage('dog-duck', 'img/dog-duck.jpg');
-  products[9] = new ProductImage('dragon', 'img/dragon.jpg');
-  products[10] = new ProductImage('pens', 'img/pen.jpg');
-  products[11] = new ProductImage('pet-sweep', 'img/pet-sweep.jpg');
-  products[12] = new ProductImage('scissors', 'img/scissors.jpg');
-  products[13] = new ProductImage('shark', 'img/shark.jpg');
-  products[14] = new ProductImage('sweep', 'img/sweep.png');
-  products[15] = new ProductImage('tauntaun', 'img/tauntaun.jpg');
-  products[16] = new ProductImage('unicorn', 'img/unicorn.jpg');
-  products[17] = new ProductImage('water-can', 'img/water-can.jpg');
-  products[18] = new ProductImage('wine-glass', 'img/wine-glass.jpg');
+  products[0] = new ProductImage('R2D2 Bag', 'img/bag.jpg');
+  products[1] = new ProductImage('Banana Chopper', 'img/banana.jpg');
+  products[2] = new ProductImage('Ipad Holder', 'img/bathroom.jpg');
+  products[3] = new ProductImage('Open Toed Boots', 'img/boots.jpg');
+  products[4] = new ProductImage('Toaster and Coffee Maker', 'img/breakfast.jpg');
+  products[5] = new ProductImage('MeatBall Gum', 'img/bubblegum.jpg');
+  products[6] = new ProductImage('Unique Chair', 'img/chair.jpg');
+  products[7] = new ProductImage('Cthulu Toy', 'img/cthulhu.jpg');
+  products[8] = new ProductImage('Dog Duck Mask', 'img/dog-duck.jpg');
+  products[9] = new ProductImage('Dragon Meat', 'img/dragon.jpg');
+  products[10] = new ProductImage('Utensil Pens', 'img/pen.jpg');
+  products[11] = new ProductImage('Pet Sweep Slippers', 'img/pet-sweep.jpg');
+  products[12] = new ProductImage('Pizza scissors', 'img/scissors.jpg');
+  products[13] = new ProductImage('Shark Sleeping Bag', 'img/shark.jpg');
+  products[14] = new ProductImage('Baby Sweeper', 'img/sweep.png');
+  products[15] = new ProductImage('Tauntaun Sleeping Bag', 'img/tauntaun.jpg');
+  products[16] = new ProductImage('Unicorn Meat', 'img/unicorn.jpg');
+  products[17] = new ProductImage('Self Filling Watering Can', 'img/water-can.jpg');
+  products[18] = new ProductImage('Unique Wine Glass', 'img/wine-glass.jpg');
 
   products.forEach(function (product) {
     if (product.getStorage() !== null) {
@@ -64,19 +65,12 @@ function createProducts() {
 }
 
 function renderImages() {
+  genImages();
   imageElements.forEach(function (img) {
-    let newProduct = randomGen(0, 18);
-
-    while (products[newProduct].productName === imageElements[0].id || products[newProduct].productName === imageElements[1].id || products[newProduct].productName === imageElements[2].id) {
-      newProduct = randomGen(0, 18);
-    }
-
-    img.src = products[newProduct].filePath;
-    img.id = products[newProduct].productName;
-    products[newProduct].imgViews++;
     img.addEventListener('click', imageClick);
   });
 }
+
 
 function imageClick() {
 
@@ -87,49 +81,58 @@ function imageClick() {
         products[i].updateStorage();
       }
     }
-    swapImages();
+    genImages();
     sessionClicks++;
   }
   if (sessionClicks === sessionSize) {
-    createResultsButton();
+    clearImages();
+    createButton('results', graphResults, 'View Results');
     imageElements.forEach(function (img) {
       img.removeEventListener('click', imageClick);
     });
   }
 }
 
-function swapImages() {
-  let image1 = imageElements[0];
-  let image2 = imageElements[1];
-  let image3 = imageElements[2];
-  imageElements.forEach(function (img) {
+function genImages() {
+  let originImages = [imageElements[0].id, imageElements[1].id, imageElements[2].id];
+
+  for (let i = 0; i < imageElements.length; i++) {
     let newProduct = randomGen(0, 18);
 
-    while (products[newProduct].productName === imageElements[0].id || products[newProduct].productName === imageElements[1].id || products[newProduct].productName === imageElements[2].id || products[newProduct].productName === image1.id || products[newProduct].productName === image2.id || products[newProduct].productName === image3.id) {
+    while (products[newProduct].productName === imageElements[0].id || products[newProduct].productName === imageElements[1].id || products[newProduct].productName === imageElements[2].id || products[newProduct].productName === originImages[0] || products[newProduct].productName === originImages[1] || products[newProduct].productName === originImages[2]) {
       newProduct = randomGen(0, 18);
     }
-    img.src = products[newProduct].filePath;
-    img.id = products[newProduct].productName;
+    labelElements[i].innerHTML = products[newProduct].productName;
+    imageElements[i].src = products[newProduct].filePath;
+    imageElements[i].id = products[newProduct].productName;
     products[newProduct].imgViews++;
-  });
+  }
 }
 
-
-function createResultsButton() {
-  let body = document.getElementsByTagName('body')[0];
+function clearStorage() {
+  localStorage.clear();
+}
+function clearImages() {
+  for (let i = 0; i < imageElements.length; i++) {
+    imageElements[i].remove();
+    labelElements[i].remove();
+  }
+}
+function createButton(element, actionFunction, text) {
+  let resultsEl = document.getElementById(element);
   let btn = document.createElement('button');
-  body.appendChild(btn);
+  resultsEl.appendChild(btn);
 
-  btn.addEventListener('click', graphResults);
-  btn.innerText = 'View Results';
+  btn.addEventListener('click', actionFunction);
+  btn.innerText = text;
 }
 
 function printResultsText() {
-  let body = document.getElementsByTagName('body')[0];
+  let resultsEl = document.getElementById('results')[0];
   for (let i = 0; i < products.length; i++) {
     let line = document.createElement('p');
     line.appendChild(document.createTextNode(products[i].productName + ' got ' + products[i].imgClicks + ' votes and was seen ' + products[i].imgViews));
-    body.appendChild(line);
+    resultsEl.appendChild(line);
   }
 }
 
@@ -161,6 +164,13 @@ function graphResults() {
       }],
     }
   });
+  document.getElementsByTagName('button')[0].remove();
+  createButton('results', function () {
+    clearStorage();
+    document.getElementsByTagName('button')[0].remove();
+    document.getElementsByTagName('canvas')[0].remove();
+    graphResults();
+  }, 'Click to clear all data');
 }
 
 
